@@ -1,51 +1,62 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Salesforce Chat Demo</title>
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce Embedded Service Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
+        h1 { color: #1e90ff; }
+        .chat-container { max-width: 600px; margin: 0 auto; }
+    </style>
 </head>
 <body>
-  <h1>Salesforce Embedded Chat with JWT Demo</h1>
+    <h1>Salesforce Embedded Service Demo</h1>
+    <div class="chat-container">
+        <div id="embeddedService"></div>
+    </div>
 
-  <script src="https://service.force.com/embeddedservice/embeddedService.js"></script>
-  <script>
-    var jwtToken = "PASTE_YOUR_JWT_HERE"; // for demo purposes only
+    <!-- Salesforce Embedded Service Script -->
+    <script type="text/javascript">
+        // Replace with your Salesforce Embedded Service Deployment snippet
+        // This is a placeholder; obtain the actual script from Salesforce Setup > Embedded Service Deployments
+        var initESW = function(gslbBaseUrl) {
+            embedded_svc.settings.displayHelpButton = true; // Show help button
+            embedded_svc.settings.language = 'en_US'; // Language setting
+            embedded_svc.settings.enabledFeatures = ['LiveAgent'];
+            embedded_svc.settings.entryFeature = 'LiveAgent';
+            embedded_svc.settings.storageDomain = 'your-domain.com'; // Replace with your domain
 
-    var initESW = function(gslbBaseURL) {
-      embedded_svc.settings.displayHelpButton = true; 
-      embedded_svc.settings.language = 'en';
+            embedded_svc.init(
+                'https://your-org.my.salesforce.com', // Salesforce Org URL
+                'https://your-org.my.salesforce.com', // Community URL (if applicable)
+                gslbBaseUrl,
+                '00Dxxxxxxxxxxxx', // Org ID
+                'Chat_Deployment', // Deployment Name
+                {
+                    baseLiveAgentContentURL: 'https://c.la1-c2cs-phx.salesforceliveagent.com/content',
+                    deploymentId: '572xxxxxxxxxxxx', // Deployment ID
+                    buttonId: '573xxxxxxxxxxxx', // Button ID
+                    baseLiveAgentURL: 'https://d.la1-c2cs-phx.salesforceliveagent.com/chat',
+                    eswConfigDevName: 'Embedded_Service_Config',
+                    isAuthenticationRequired: true, // Require authentication
+                    auth: {
+                        type: 'jwt',
+                        token: 'YOUR_ACCESS_TOKEN' // Replace with JWT-generated access token
+                    }
+                }
+            );
+        };
 
-      // User Identity Token Auth (JWT)
-      embedded_svc.settings.identityProvider = 'JWT';
-      embedded_svc.settings.jwtToken = jwtToken;
-
-      embedded_svc.init(
-        'https://yourdomain.my.salesforce.com',
-        'https://yourSiteName.secure.force.com',
-        gslbBaseURL,
-        '00Dxx0000001gP1',
-        'DemoChat',
-        {
-          baseLiveAgentContentURL: 'https://c.la1-c1cs-ia2.salesforceliveagent.com/content',
-          deploymentId: '572xx0000000001',
-          buttonId: '573xx0000000001',
-          baseLiveAgentURL: 'https://d.la1-c1cs-ia2.salesforceliveagent.com/chat',
-          eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04Ixx0000000001EAA_15b1ab74e16',
-          isOfflineSupportEnabled: false
+        // Load Embedded Service script
+        if (!window.embedded_svc) {
+            var s = document.createElement('script');
+            s.setAttribute('src', 'https://your-org.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+            s.onload = function() { initESW(null); };
+            document.body.appendChild(s);
+        } else {
+            initESW('https://service.force.com');
         }
-      );
-    };
-
-    if (!window.embedded_svc) {
-      var s = document.createElement('script');
-      s.setAttribute('src', 'https://yourdomain.my.salesforce.com/embeddedservice/5.0/esw.min.js');
-      s.onload = function() {
-        initESW(null);
-      };
-      document.body.appendChild(s);
-    } else {
-      initESW(null);
-    }
-  </script>
+    </script>
 </body>
 </html>
