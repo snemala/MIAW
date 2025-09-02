@@ -17,46 +17,24 @@
     </div>
 
     <!-- Salesforce Embedded Service Script -->
-    <script type="text/javascript">
-        // Replace with your Salesforce Embedded Service Deployment snippet
-        // This is a placeholder; obtain the actual script from Salesforce Setup > Embedded Service Deployments
-        var initESW = function(gslbBaseUrl) {
-            embedded_svc.settings.displayHelpButton = true; // Show help button
-            embedded_svc.settings.language = 'en_US'; // Language setting
-            embedded_svc.settings.enabledFeatures = ['LiveAgent'];
-            embedded_svc.settings.entryFeature = 'LiveAgent';
-            embedded_svc.settings.storageDomain = 'your-domain.com'; // Replace with your domain
+<script type='text/javascript'>
+	function initEmbeddedMessaging() {
+		try {
+			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
 
-            embedded_svc.init(
-                'https://your-org.my.salesforce.com', // Salesforce Org URL
-                'https://your-org.my.salesforce.com', // Community URL (if applicable)
-                gslbBaseUrl,
-                '00Dxxxxxxxxxxxx', // Org ID
-                'Chat_Deployment', // Deployment Name
-                {
-                    baseLiveAgentContentURL: 'https://c.la1-c2cs-phx.salesforceliveagent.com/content',
-                    deploymentId: '572xxxxxxxxxxxx', // Deployment ID
-                    buttonId: '573xxxxxxxxxxxx', // Button ID
-                    baseLiveAgentURL: 'https://d.la1-c2cs-phx.salesforceliveagent.com/chat',
-                    eswConfigDevName: 'Embedded_Service_Config',
-                    isAuthenticationRequired: true, // Require authentication
-                    auth: {
-                        type: 'jwt',
-                        token: 'YOUR_ACCESS_TOKEN' // Replace with JWT-generated access token
-                    }
-                }
-            );
-        };
-
-        // Load Embedded Service script
-        if (!window.embedded_svc) {
-            var s = document.createElement('script');
-            s.setAttribute('src', 'https://your-org.my.salesforce.com/embeddedservice/5.0/esw.min.js');
-            s.onload = function() { initESW(null); };
-            document.body.appendChild(s);
-        } else {
-            initESW('https://service.force.com');
-        }
-    </script>
+			embeddedservice_bootstrap.init(
+				'00Daj00000ZHYlu',
+				'Web_Chat',
+				'https://gerent-bb-dev-ed.develop.my.site.com/ESWWebChat1756825429502',
+				{
+					scrt2URL: 'https://gerent-bb-dev-ed.develop.my.salesforce-scrt.com'
+				}
+			);
+		} catch (err) {
+			console.error('Error loading Embedded Messaging: ', err);
+		}
+	};
+</script>
+<script type='text/javascript' src='https://gerent-bb-dev-ed.develop.my.site.com/ESWWebChat1756825429502/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
