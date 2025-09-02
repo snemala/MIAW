@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Salesforce Chat Demo</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+  <h1>Salesforce Embedded Chat with JWT Demo</h1>
+
+  <script src="https://service.force.com/embeddedservice/embeddedService.js"></script>
+  <script>
+    var jwtToken = "PASTE_YOUR_JWT_HERE"; // for demo purposes only
+
+    var initESW = function(gslbBaseURL) {
+      embedded_svc.settings.displayHelpButton = true; 
+      embedded_svc.settings.language = 'en';
+
+      // User Identity Token Auth (JWT)
+      embedded_svc.settings.identityProvider = 'JWT';
+      embedded_svc.settings.jwtToken = jwtToken;
+
+      embedded_svc.init(
+        'https://yourdomain.my.salesforce.com',
+        'https://yourSiteName.secure.force.com',
+        gslbBaseURL,
+        '00Dxx0000001gP1',
+        'DemoChat',
+        {
+          baseLiveAgentContentURL: 'https://c.la1-c1cs-ia2.salesforceliveagent.com/content',
+          deploymentId: '572xx0000000001',
+          buttonId: '573xx0000000001',
+          baseLiveAgentURL: 'https://d.la1-c1cs-ia2.salesforceliveagent.com/chat',
+          eswLiveAgentDevName: 'EmbeddedServiceLiveAgent_Parent04Ixx0000000001EAA_15b1ab74e16',
+          isOfflineSupportEnabled: false
+        }
+      );
+    };
+
+    if (!window.embedded_svc) {
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://yourdomain.my.salesforce.com/embeddedservice/5.0/esw.min.js');
+      s.onload = function() {
+        initESW(null);
+      };
+      document.body.appendChild(s);
+    } else {
+      initESW(null);
+    }
+  </script>
+</body>
+</html>
