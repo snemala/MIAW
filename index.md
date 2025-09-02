@@ -20,5 +20,5 @@
 </script>
 <script type='text/javascript' src='https://gerent-bb-dev-ed.develop.my.site.com/ESWWebChat1756825429502/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 
-  </body>
+  </body> 
 </html>
