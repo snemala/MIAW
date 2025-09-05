@@ -19,15 +19,6 @@
 
 
 <script type='text/javascript'>
-				window.addEventListener("onEmbeddedMessagingReady", () => {
-  console.log("Received the onEmbeddedMessagingReady event.");
-
-  // Send your identity token to Salesforce.
-  embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-    identityTokenType: "JWT",
-    identityToken: “eyJraWQiOiJKV1REZW1vTUlBVyIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJNSUFXa2V5aXNzdWVyIiwic3ViIjoic3Jpbml2YXMubmVtYWxhQGdlcmVudC5jb20iLCJleHAiOjE3NTY5MDk0NzcsImlhdCI6MTc1NjkwNTg3N30.bwA4lttqy8YsBNY9pq8tTwxRvJYYSR-w87HRByuIPrqqa2Azqlk5UiWKOSdpX5d6SZhHgKSUmuBdwEhqKsAtdXE5CE_r9CdwQMHLSmw5CSOMewswx3y210j2Iaco7soYe494tjBc2z09DNLa_Gvad0lQ5ZA3gdI0_cpwcx_iPW1D13t9QtWhHYJ5-E-0M69XBZEG_KAQ6CidlC6KS8yGWcZM7K9vsEDSFzXaGcuXWx0zBmSRquB7zIlIJAGfOe2l8uiUpz9SOEhd4wd8rvyKzO8IdqB8h_KtUMOXHth66QhJyE0WNwlLwPf51g5xnQgd1iwGEZWjNbjYtYzcIZTkfQ”
-  });
-});
     function initEmbeddedMessaging() {
         try {
             embeddedservice_bootstrap.settings.language = 'en_US'; // language setting
