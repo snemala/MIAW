@@ -98,7 +98,14 @@
         // This function simulates the JWT generation.
         // In a real application, this should be a call to a secure backend endpoint.
         async function generateJWT() {
+            // Check if the jws library is loaded
+            if (typeof jws === 'undefined') {
+                console.error('Error: jws library is not loaded. Check your network connection or the script URL.');
+                throw new Error('jws library not found.');
+            }
+
             // Placeholder values. Replace with your actual connected app and user data.
+            // Example of a correctly formatted private key.
             const privateKey = `-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEyALJzvqjAsmy
 Q33a8BJnq5SHsfHNbyKFEWMXCA6ChjroE1rP12k/PydZkuZj92LaS5JZMH4beh74
@@ -151,7 +158,8 @@ YK2n1E64wQJYHZnJBKrB9+4cOw==
             try {
                 const jwtToken = await generateJWT();
 
-                embeddedservice_bootstrap.userVerification.get    .set   .set(
+                // Correcting the userVerification call from the previous version
+                embeddedservice_bootstrap.userVerification.set(
                     '3MVG9XgkMlifdwVCo7dL2Z51TRRFir5QDUHhRNtyt7EQuLg7RwL6HGHg1YAg_lGxLfVAuvFwqBJzD7XGxV9vI', // Consumer Key of your Connected App
                     jwtToken,
                     '04Iaj000000LxRhEAK' // Deployment ID from your Embedded Service Deployment
