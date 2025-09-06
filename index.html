@@ -3,29 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce Embedded Service Demo</title>
+    <title>Salesforce Messaging Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-jws/3.2.0/jws.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-        h1 { color: #1e90ff; }
-        .chat-container { max-width: 600px; margin: 0 auto; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #fff;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
-<body>
-    <h1>Salesforce Embedded Service Demo</h1>
-    <div class="chat-container">
-        <div id="embeddedService"></div>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main demo container -->
+    <div class="container bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
+        <div class="text-center">
+            <h1 class="text-3xl font-bold text-gray-800 mb-2">Messaging for Web & In-App Demo</h1>
+            <p class="text-gray-500 mb-6">Demonstrates JWT-authenticated chat initialization from an external website.</p>
+        </div>
+
+        <!-- JWT and Salesforce setup information -->
+        <div class="bg-gray-50 rounded-lg p-6 mb-6">
+            <h2 class="text-xl font-semibold text-gray-700 mb-3">Setup Instructions</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-600">
+                <li>Replace the placeholder values in the `script` tag with your Salesforce org's details.</li>
+                <li>The `privateKey` should be securely generated and stored on a backend server, not here. This demo uses a placeholder for illustration only.</li>
+                <li>The `deploymentId` and `messagingEndpoint` are found in your Embedded Service Deployment setup.</li>
+                <li>Ensure your Connected App in Salesforce is configured for JWT authorization.</li>
+            </ul>
+        </div>
+
+        <!-- Chat initiation section -->
+        <div class="text-center">
+            <button id="startChatBtn" class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center mx-auto">
+                <span id="btnText">Start Secure Chat</span>
+                <div id="loadingSpinner" class="hidden loading-spinner ml-2"></div>
+            </button>
+        </div>
     </div>
+
     <script type='text/javascript'>
-        /*window.addEventListener("onEmbeddedMessagingReady", () => {
-          console.log("Received the onEmbeddedMessagingReady event.");
-        
-          // Send your identity token to Salesforce.
-          embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-            identityTokenType: "JWT",
-            identityToken: “eyJraWQiOiJKV1REZW1vTUlBVyIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJNSUFXa2V5aXNzdWVyIiwic3ViIjoic3Jpbml2YXMubmVtYWxhQGdlcmVudC5jb20iLCJleHAiOjE3NTY5MDk0NzcsImlhdCI6MTc1NjkwNTg3N30.bwA4lttqy8YsBNY9pq8tTwxRvJYYSR-w87HRByuIPrqqa2Azqlk5UiWKOSdpX5d6SZhHgKSUmuBdwEhqKsAtdXE5CE_r9CdwQMHLSmw5CSOMewswx3y210j2Iaco7soYe494tjBc2z09DNLa_Gvad0lQ5ZA3gdI0_cpwcx_iPW1D13t9QtWhHYJ5-E-0M69XBZEG_KAQ6CidlC6KS8yGWcZM7K9vsEDSFzXaGcuXWx0zBmSRquB7zIlIJAGfOe2l8uiUpz9SOEhd4wd8rvyKzO8IdqB8h_KtUMOXHth66QhJyE0WNwlLwPf51g5xnQgd1iwGEZWjNbjYtYzcIZTkfQ”
-          });
-        });*/
-        
+        // Salesforce Embedded Service Core Snippet
+        // This is the standard script from your Embedded Service Deployment
     	function initEmbeddedMessaging() {
     		try {
     			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
@@ -42,7 +77,120 @@
     			console.error('Error loading Embedded Messaging: ', err);
     		}
     	};
+
+        const startChatBtn = document.getElementById('startChatBtn');
+        const btnText = document.getElementById('btnText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Function to toggle the button's loading state
+        function toggleLoading(isLoading) {
+            if (isLoading) {
+                btnText.classList.add('hidden');
+                loadingSpinner.classList.remove('hidden');
+                startChatBtn.disabled = true;
+            } else {
+                btnText.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
+                startChatBtn.disabled = false;
+            }
+        }
+        
+        // This function simulates the JWT generation.
+        // In a real application, this should be a call to a secure backend endpoint.
+        async function generateJWT() {
+            // Placeholder values. Replace with your actual connected app and user data.
+            const privateKey = `-----BEGIN PRIVATE KEY-----
+MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDEyALJzvqjAsmy
+Q33a8BJnq5SHsfHNbyKFEWMXCA6ChjroE1rP12k/PydZkuZj92LaS5JZMH4beh74
+qXwOju7F+OFaSTG0InE5/FXx970d57Jrynk6X1rZSIAZHkqwR9pZzRLwb7HH277r
+08O0NeH5NcCd3VF1YNP/wnpcMQWawDYHZuSaiWVCbcbNErCQiNH7U56GtRJmEaDo
+0l9A3frbmEKjTLxr5IRrV44a+nTIeWkKMDvq94N4+fRbO+c1sfnp2SB7pR8weWIg
+F2WZ8VIZSYSI010M4k3O3Nwv59PDqNd/2RhN3E71IPufoG/4QbhYEfMRF299FzP5
+DBoHg4sHAgMBAAECggEALm6jecsFCQHXZeDXCZosPZoW6g3q6HaYxp1brEuSYOob
+bDdk7jX995aHSnOHOX9eK/Q5DCKNHx6pwDL9utGvNbeMNSmgOMkHvo70GKxES5Io
+X5bfFA77+NlKoKKtLPtHYnkpRuKUKHyJiEvnmdY9A/jTAmz+k5vNakQRaz+F+wWF
+sJ+PQo6ycHEACkzkDPJqTpy4fdvHKztTAdaALtcuMmMasJC00V/MQRLYSAeQW3j2
+Sllax0IjppsTQC+xpfuvL4TP8I1tJ+0PM+bxh8bdRvgKJqP4XU9WOJikugLdKAvm
+Yg9Pr+0HxMa2H0qI2gfZdoc/dERZMQNGavEE8iYpQQKBgQDrMPtJD5s0VfVHyxV6
+ZWcYMadtrFVsTfHIJcM3nl5YSiKAtbYW5NEurwlUNDqBlBQeA+LExPl9mX3beaas
+9QRaT82xD5/cF9cJ6w2byQz/bdWXyqWRWWI7SUOCF9QpECD12y0b0BsNlijjROMr
+4cZ51CM0WnvuMjIzzGRHdIBy1QKBgQDWMQ1yc8mwNaa1YnQqv55cZyfmxztpDq4c
+4aCJasDXyCKA10hrfGd4rzWSDnu9HslizvMw8mSc+IlPZB3fLLl1CVuRgHWbNd2w
+ypcCH2uW6RSNRyZDZxbb9Yba6TN3IqCsThiwFoI4d8KK8fiYX9b3BsSp3NGUze7P
+d5++69NcawKBgQDV1rQy6pigDiO0wgZmQbppugPT6OPGVFwoMYV8lWaMeeNDCXRk
+/mjfPFCMGey0EjH0VG4joECDnUJcghA0o5Xwkyye92jO0XI4V1oJMdS6jV+t4peF
+PzLcWrGhoA7Lwxlk0IIEDsP6J3RHp0Oxi1dNP78+g6K4oTUZ+ZWXjmqXfQKBgQCo
+aO8iw2mcc8K9MUkXZ4yTKMSVzqamxtUdfkXkZhx0TTbbyOl3IdyVZmWfjmW6YF+F
+oiRSovN6/GuyEYzvMdIr9Iybzb4qqGLDo7ayA5Rrlp4DKyMpsf+mONmse9lsXbyp
+XcpJgZkn3voGl5SX8hsqJZcx256p+nU/iNYAnpmUOwKBgQCyYhODJ25lb2BSSMh1
+dvB1J/8r0Fg9FKbeJQjE0+KEj5vptfRftNZMihFHLRgjKXDUpWQcY1UKS0GMLcTn
+8BVlR93WKlMKcq5gUB9qmJ1pEZfz/3IgbE+jpZdX5CR6sftiEC5/JRZ3vIAwl8e3
+YK2n1E64wQJYHZnJBKrB9+4cOw==
+-----END PRIVATE KEY-----`;
+
+            const header = {
+                "alg": "RS256"
+            };
+
+            const payload = {
+                "iss": "3MVG9XgkMlifdwVCo7dL2Z51TRRFir5QDUHhRNtyt7EQuLg7RwL6HGHg1YAg_lGxLfVAuvFwqBJzD7XGxV9vI",
+                "sub": "srinivas.nemala@gerent.com", // The Salesforce user this token is for
+                "aud": "https://gerent-bb-dev-ed.develop.lightning.force.com",
+                "exp": Math.floor(Date.now() / 1000) + 360 // Expiration time (360 seconds from now)
+            };
+
+            const jwt = jws.sign({ header: header, payload: payload, privateKey: privateKey });
+            console.log("Generated Mock JWT: ", jwt);
+
+            return jwt;
+        }
+
+        async function startSecureChat() {
+            toggleLoading(true);
+
+            try {
+                const jwtToken = await generateJWT();
+
+                embeddedservice_bootstrap.userVerification.get    .set   .set(
+                    '3MVG9XgkMlifdwVCo7dL2Z51TRRFir5QDUHhRNtyt7EQuLg7RwL6HGHg1YAg_lGxLfVAuvFwqBJzD7XGxV9vI', // Consumer Key of your Connected App
+                    jwtToken,
+                    '04Iaj000000LxRhEAK' // Deployment ID from your Embedded Service Deployment
+                );
+
+                // Use the Messaging.open() method to open the chat window with user verification.
+                embeddedservice_bootstrap.messaging.client.open({});
+
+            } catch (error) {
+                console.error('Error during JWT or chat initialization:', error);
+                // Display error message to the user
+                btnText.textContent = 'Error!';
+                btnText.classList.remove('hidden');
+                loadingSpinner.classList.add('hidden');
+                setTimeout(() => {
+                    btnText.textContent = 'Start Secure Chat';
+                    startChatBtn.disabled = false;
+                }, 3000);
+            } finally {
+                toggleLoading(false);
+            }
+        }
+        
+        // Add event listener to the button to start the chat
+        document.addEventListener('DOMContentLoaded', () => {
+             startChatBtn.addEventListener('click', startSecureChat);
+             
+             // Check if the embedded messaging script is already loaded
+             if (typeof embeddedservice_bootstrap !== 'undefined') {
+                initEmbeddedMessaging();
+             } else {
+                const script = document.createElement('script');
+                script.src = 'https://your-snap-in-domain.my.salesforce.com/embeddedservice/5.0/bootstrap.min.js';
+                script.onload = () => {
+                    initEmbeddedMessaging();
+                };
+                document.head.appendChild(script);
+            }
+        });
     </script>
-    <script type='text/javascript' src='https://gerent-bb-dev-ed.develop.my.site.com/ESWWebChat1756825429502/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
 </body>
 </html>
