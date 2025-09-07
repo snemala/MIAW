@@ -77,10 +77,9 @@ iuhqYxcfiD3ydo+6uF5BBPM=
 
             return jwt;
 	}
-	window.addEventListener("onEmbeddedMessagingReady", () => {
+	window.addEventListener("onEmbeddedMessagingReady", async () => {
 	  console.log("Received the onEmbeddedMessagingReady event.");
-	  // Send your identity token to Salesforce.
-		const jwtToken = await generateJWT();
+	  const jwtToken = await generateJWT();
 	  embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
 	    identityTokenType: "JWT",
 	    identityToken: jwtToken,
