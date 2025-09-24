@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <body>
-	<script type='text/javascript'>
+	<apex:page showHeader="false" sidebar="false" applyBodyTag="false" docType="html-5.0">
+    <script type='text/javascript'>
 	function initEmbeddedMessaging() {
 		try {
 			embeddedservice_bootstrap.settings.language = 'en_US'; // For example, enter 'en' or 'en-US'
@@ -19,20 +20,35 @@
 		}
 	};
 </script>
-
-<script type='text/javascript'>
+     <script type="text/javascript">
+        var jWTFromApex; 
+        function callApexMethod() {
+            JWTGenerateToken.generateJWT(function(result, event) {
+                if (event.status) {
+                    console.log('Generated JWT : ' +result);
+                    jWTFromApex = result;
+                } else {
+                    console.error(event.message);
+                }
+            });
+        }
+    </script>
+ <script type='text/javascript'>
 	window.addEventListener("onEmbeddedMessagingReady", () => {
   console.log("Received the onEmbeddedMessagingReady event.");
 
-  // Send your identity token to Salesforce.
-  embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
-    identityTokenType: "JWT",
-    identityToken: "eyJraWQiOiJKV1REZW1vTUlBVyIsImFsZyI6IlJTMjU2In0.eyJpc3MiOiJKV1RUZXN0V2ViSXNzdWVyIiwic3ViIjoic3Jpbml2YXMubmVtYWxhQGdlcmVudC5jb20uand0YXV0aCIsImV4cCI6MTc1NzY5NDEyNiwiaWF0IjoxNzU3NjkwNTI2fQ.qvq-ZMsKz9ecl2vA2nQIFIGVqF3hYF1F_uDhJ6giKjGKZk3Fnj4hBAsfmzbd7cVeCJ7C3qKqYZcHDSyN2CCvfJhLuGOJ-WzaP7Q5dN2_pssavuM8F0m2wCUgynmxxfuAzmRyjcn81hS8BeqCO_exYw1dzAzUu3d7pqqa9muQUUofPNuM8GanhIYbfBxmmbzysR4RzN4_V7aRJ9sOLlcubvBsgEZAC1CsKLHgifzCNotp2exwVXi0FEmg2Jvze2VxavbUGfXpq2H5KRdEapw59xlXJ9MryRdVVn78f7w_4OCD6nNKD_060CZcOu3CxsWNnhQbLQw-qJfOMaxSd7M6Yg"
-  });
+  callApexMethod(); // <-- generate JWT first
+
+  // Delay until JWT is ready
+  setTimeout(() => {
+    embeddedservice_bootstrap.userVerificationAPI.setIdentityToken({
+      identityTokenType: "JWT",
+      identityToken: jWTFromApex
+    });
+  }, 1000);
 });
 </script>
-	
 <script type='text/javascript' src='https://gerentllc-d-dev-ed.develop.my.site.com/ESWWeb1757243067568/assets/js/bootstrap.min.js' onload='initEmbeddedMessaging()'></script>
-
+</apex:page>
 </body>
 </html>
